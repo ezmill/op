@@ -132,6 +132,7 @@ function initCloth() {
             video.play();
             videoLoaded = true;
             videoTexture = new THREE.Texture(video);
+            videoTexture.flipY = false;
             videoTexture.needsUpdate = true;
         }, function(error){
            console.log("Failed to get a stream due to", error);
@@ -212,7 +213,7 @@ function outputDraw() {
     // inputTexture.needsUpdate = true;
     time = Date.now();
     camMaterial.uniforms.texture.value = videoTexture;
-    videoTexture.flipY = true;
+    videoTexture.flipY = false;
     videoTexture.needsUpdate = true;
     // windStrength = 0;
     windStrength = Math.cos( time / 7000 ) * 10 + 20;
