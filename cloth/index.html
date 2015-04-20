@@ -18,6 +18,24 @@ void main() {
     gl_FragColor = texture2D(texture, vUv);
 }
 </script>
+
+<script id="passFs" type="x-fragment/x-shader">
+uniform sampler2D texture; 
+uniform sampler2D texture2; 
+varying vec2 vUv;
+
+void main() {
+    // float avg = normalize((texture2D(texture, vUv).rgb + texture2D(texture2, vUv).rgb)*0.5);
+    float avg = dot(texture2D(texture2, vUv).rgb, vec3(1.0))/3.0;
+    if(avg < 0.1){
+      gl_FragColor = vec4(texture2D(texture, vUv).rgb,1.0);
+    }
+    else {
+      discard;
+    }
+    
+}
+</script>
 <script id="vs" type="x-shader/x-vertex">
 
     varying vec2 vUv;

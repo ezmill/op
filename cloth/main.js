@@ -7,6 +7,7 @@ var mouseX, mouseY;
 var mapMouseX, mapMouseY;
 var time = 0;
 var rtt;
+var videoTexture;
 var globalUniforms = {
     time: {
         type: "f",
@@ -69,6 +70,7 @@ function initOutputScene() {
     outputRenderer = new THREE.WebGLRenderer({
         preserveDrawingBuffer: true,
         alpha: true
+        // antialias: true
     });
     outputRenderer.setSize(w, h);
     outputRenderer.setClearColor(0xffffff, 1);
@@ -121,19 +123,43 @@ function initCloth() {
     // object.receiveShadow = true;
     // outputScene.add(object);
     var tex = THREE.ImageUtils.loadTexture("tex/stripe.png");
-    for(var i = 0; i < 1; i++){
-        var object = new THREE.Mesh(cloths[i], new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            side: 2,
-            map: tex,
-            transparent: true
-        }));
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+    if (navigator.getUserMedia) {       
+        navigator.getUserMedia({video: true, audio: false}, function(stream){
+            var url = window.URL || window.webkitURL;
+            video = document.createElement("video");
+            video.src = url ? url.createObjectURL(stream) : stream;
+            video.play();
+            videoLoaded = true;
+            videoTexture = new THREE.Texture(video);
+            videoTexture.needsUpdate = true;
+        }, function(error){
+           console.log("Failed to get a stream due to", error);
+        });
+    }
+    // for(var i = 0; i < 1; i++){
+        // var object = new THREE.Mesh(cloths[i], new THREE.MeshBasicMaterial({
+        //     color: 0xffffff,
+        //     side: 2,
+        //     map: tex,
+        //     transparent: true
+        // }));
+        camMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                texture: {type: 't', value: videoTexture},
+                texture2: {type: 't', value: tex}
+            },
+            fragmentShader: document.getElementById("passFs").textContent,
+            vertexShader: document.getElementById("vs").textContent,
+            side: 2
+        })
+        object = new THREE.Mesh(cloths[0], camMaterial);
         object.position.set(0, 0, 50*i);
         // object.rotation.set(Math.PI, 0, 0);
         object.castShadow = true;
         object.receiveShadow = true;
         outputScene.add(object);
-    }
+    // }
 
     // object2 = new THREE.Mesh(cloths[1], new THREE.MeshBasicMaterial({
     //     color: 0xffffff,
@@ -185,7 +211,9 @@ function outputDraw() {
     // time += 0.5;
     // inputTexture.needsUpdate = true;
     time = Date.now();
-
+    camMaterial.uniforms.texture.value = videoTexture;
+    videoTexture.flipY = true;
+    videoTexture.needsUpdate = true;
     // windStrength = 0;
     windStrength = Math.cos( time / 7000 ) * 10 + 20;
     windForce.set(Math.sin(time / 2000), Math.cos(time / 3000), Math.sin(time / 1000)).normalize().multiplyScalar(windStrength);
