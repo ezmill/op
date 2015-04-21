@@ -65,14 +65,14 @@ function initCanvasTex(){
 
     var urls = [];
     for (var i = 0; i < 6; i++) {
-        var url = "tex/grey.jpg";
+        var url = "tex/gradient.jpg";
         urls.push(url);
     }
     texCube = THREE.ImageUtils.loadTextureCube(urls, THREE.CubeRefractionMapping, function() {});
 
     var urls2 = [];
     for (var i = 0; i < 6; i++) {
-        var url = "tex/stripe7.jpg";
+        var url = "tex/gradient-5.jpg";
         urls2.push(url);
     }
     texCube2 = THREE.ImageUtils.loadTextureCube(urls2, THREE.CubeRefractionMapping, function() {});
@@ -208,22 +208,22 @@ function initFrameDifferencing(){
 
 	// sphereGeometry = new THREE.SphereGeometry(100,100,100);
 	    dazzleMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, envMap: texCube, side: THREE.DoubleSide});
-	    dazzleMaterial2 = new THREE.MeshBasicMaterial({color: 0xffffff, envMap: texCube2, side: THREE.DoubleSide});
+	    dazzleMaterial2 = new THREE.MeshBasicMaterial({color: 0xffffff, envMap: texCube, side: THREE.DoubleSide});
 
-	// sphereGeometry = new THREE.CircleGeometry(100,100,100);
+	sphereGeometry = new THREE.CircleGeometry(100,100,100);
     loader = new THREE.BinaryLoader(true);
- //    for(var j = 0; j<2; j++){
- //    for(var i = 0; i < 25; i++){
-		loader.load("shards/gavel.js", function(geometry) {
+  //   // for(var j = 0; j<25; j++){
+    // for(var i = 0; i < 25; i++){
+		loader.load("shards/19.js", function(geometry) {
 	        createShard(geometry, dazzleMaterial);
 	    });
- //    }
- //    for(var i = 25; i < 50; i++){
-	// 	loader.load("shards/"+i+".js", function(geometry) {
-	//         createShard(geometry, dazzleMaterial2);
-	//     });
- //    }
- //    }
+    // }
+    // for(var i = 25; i < 50; i++){
+		// loader.load("shards/"+i+".js", function(geometry) {
+	 //        createShard(geometry, dazzleMaterial2);
+	 //    });
+    // }
+    // }
 
  //    for (var i = 0; i < 10; i++) {
 	// 	var sphere = new THREE.Mesh(sphereGeometry, dazzleMaterial);
@@ -238,9 +238,9 @@ function initFrameDifferencing(){
 }
 function createShard(geometry, material) {
     var shard = new THREE.Mesh(geometry, material);
-    var scale = 20.0;
-    // shard.position.set(0,0,100);
+    var scale = 1000.0;
     shard.position.set(0,0,100);
+    // shard.position.set(Math.random()*w - w/2, Math.random()*h - h/2, 100);
     shard.scale.set(scale, scale, scale);
     scene.add(shard);
     shards.push(shard);
@@ -263,7 +263,7 @@ function bezierX(x1, y1, x2, y2, hue){
     ctx.lineWidth = lineWidth;
     
     // line color
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = "#0000FF";
     ctx.stroke();   
 }
 function bezierY(x1, y1, x2, y2, hue){
@@ -275,39 +275,50 @@ function bezierY(x1, y1, x2, y2, hue){
     ctx.lineWidth = lineWidth;
     
     // line color
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = "#0000FF";
     ctx.stroke();  
 }
 var time = 0.5;
 function many(){
     // time+=0.01;
-    ctx.fillStyle = "#404040";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // ctx.fillStyle = "#FFFFFF";
+    // ctx.fillRect(0, 0, canvas.width, canvas.height);
+    var my_gradient=ctx.createLinearGradient(0,0,0,canvas.height);
+	// my_gradient.addColorStop(0,"#f6f1b2");
+	// my_gradient.addColorStop(0.31,"#cae3cc");
+	// my_gradient.addColorStop(0.6,"#98d8e3");
+	// my_gradient.addColorStop(0.8,"#6ab6cb");
+	// my_gradient.addColorStop(1,"#4599b1");
+	my_gradient.addColorStop(0.25, "white");
+	my_gradient.addColorStop(0.75,"black");
+	ctx.fillStyle=my_gradient;
+	ctx.fillRect(0,0,canvas.width, canvas.height);
+
     var wy = canvas.width;
     var hy = 50;
     var wx = 50;
     var hx = canvas.height;
     var amp = 75;
-    var distX = 100;
-    var distY = 100;
+    var distX = 20;
+    var distY = 20;
     var alpha = 1.0;
-    lineWidth = 50;
+    lineWidth = 10;
 
-   for(var j = -canvas.height; j < canvas.height*2; j+=distY){
-    	var r = Math.floor(map(0.5+0.5*Math.cos(time*4/3), 1, 0, 255));
-    	var g = Math.floor(map(j, h, 0, 255));
-    	var b = Math.floor(map(0.5+0.5*Math.sin(time/2), 1, 0, 255));
-    	var color = "rgba("+r+","+g+", "+b+", "+alpha+")";
-        bezierY(0,j, canvas.width, j,  color /*hslaColor(j/5, 100, 50, alpha)*/);  
-    }
-    for(var i = -canvas.width; i < canvas.width*2; i+=distX){
-    	var r = Math.floor(map(i, w, 0, 255));
-    	var g = Math.floor(map(0.5+0.5*Math.sin(time), 1, 0, 255));
-    	var b = Math.floor(map(0.5+0.5*Math.cos(time*3/2), 1, 0, 255));
-    	var color = "rgba("+r+","+g+", "+b+", "+alpha+")";
-        // bezierX(i, 0, i, canvas.height, color /*hslaColor(i/5, 100, 50, alpha)*/);  
+   // for(var j = -canvas.height; j < canvas.height*2; j+=distY){
+   //  	var r = Math.floor(map(0.5+0.5*Math.cos(time*4/3), 1, 0, 255));
+   //  	var g = Math.floor(map(j, h, 0, 255));
+   //  	var b = Math.floor(map(0.5+0.5*Math.sin(time/2), 1, 0, 255));
+   //  	var color = "rgba("+r+","+g+", "+b+", "+alpha+")";
+   //      // bezierY(0,j, canvas.width, j,  color /*hslaColor(j/5, 100, 50, alpha)*/);  
+   //  }
+   //  for(var i = -canvas.width; i < canvas.width*2; i+=distX){
+   //  	var r = Math.floor(map(i, w, 0, 255));
+   //  	var g = Math.floor(map(0.5+0.5*Math.sin(time), 1, 0, 255));
+   //  	var b = Math.floor(map(0.5+0.5*Math.cos(time*3/2), 1, 0, 255));
+   //  	var color = "rgba("+r+","+g+", "+b+", "+alpha+")";
+   //      bezierX(i, 0, i, canvas.height, color /*hslaColor(i/5, 100, 50, alpha)*/);  
 
-    }
+   //  }
     // ctx.rotate(Math.PI/1000);
 
 
@@ -326,7 +337,7 @@ function draw(){
     camTex.needsUpdate = true;
     globalUniforms.time.value = time;
     for(var i = 0; i < shards.length; i++){
-    	shards[i].rotation.z = Math.PI/6;
+    	shards[i].rotation.x = Date.now()*0.0001;
     }
     // expand(1.01);
     // materialDiff.uniforms.texture.value = rtFB;
